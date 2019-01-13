@@ -6,9 +6,9 @@ enum mitosis_layers
     _xC, // colemak
     _xD, // dvorak
     _xW, // workman
-    _xS, // symbols
-    _xN, // numbers
-    _xF  // functions
+    _xS, // symbols - red
+    _xN, // numbers - blue
+    _xF  // functions - purple
   };
 
 enum mitosis_keycodes
