@@ -3,7 +3,7 @@ project(mitosis C)
 
 find_library(qmk_LUFA qmk_LUFA lib/lufa)
 
-add_library(mitosis_ubergrok
+add_executable(mitosis_ubergrok.out
         config.h
         matrix.c
         mitosis.c
