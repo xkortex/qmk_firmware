@@ -1,4 +1,4 @@
-# Ubergrok - a layout for the Mitosis based on Datagrok
+# a layout for the Mitosis
 
 - Emphasis on momentary modifiers, all usable from either hand, arranged symmetrically, but left/right distinguishable by the OS.
   I place left- and right-versions of Shift, GUI ("Super"), and Alt ("Meta"), and Henkan/Muhenkan (which I plan to overload for "Hyper").
@@ -163,6 +163,7 @@ Lower baud UART. Useful when using an 8Mhz pro micro; corresponding changes requ
 - Added Colemak and Dvorak as default layers that may be selected.
 - Set UART to 250kbaud with make argument `MITOSIS_DATAGROK_SLOWUART=yes`, for use with 8Mhz Pro Micros.
 - Display Num Lock status on tx LED
+- To use TWI/I2C devices, I rerouted the green LED pin from PD1 (Pro Micro pin 3) to PD4 (Pro Micro pin 4). If you do the same, set `MITOSIS_DATAGROK_I2CHACK`.
 
 ### 0.6.60
 

@@ -1,7 +1,6 @@
-#include QMK_KEYBOARD_H
-#include "stdint.h"
-#include "../../config.h"
-#include "mitosis.h"
+#include "keymap.h"
+#include "feature_cdeq.h"
+#include "feature_layout_rotate.h"
 
 #ifdef AUDIO_ENABLE
 #include "audio.h"
@@ -9,22 +8,6 @@
 extern float default_layer_songs[][16][2];
 #endif
 #endif
-
-enum mitosis_layers
-  {
-    _xQ, // qwerty
-    _xC, // colemak
-    _xD, // dvorak
-    _xW, // workman
-    _xS, // symbols
-    _xN, // numbers
-    _xF  // functions
-  };
-
-enum mitosis_keycodes
-  {
-    KC_LAYO = SAFE_RANGE
-  };
 
 // Setting MITOSIS_DATAGROK_BOTTOMSPACE in rules.mk will swap the upper and
 // lower center four thumb-keys. See keymaps/datagrok/rules.mk.
@@ -50,7 +33,7 @@ enum mitosis_keycodes
 
 // We use Space Cadet KC_RSPC to get _ on right shift. See config.h for details.
 
-const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
+const uint16_t PROGMEM keymaps[7][MATRIX_ROWS][MATRIX_COLS] = {
   [_xQ] = LAYOUT(
       KC_Q,    KC_W,       KC_E,    KC_R,    KC_T,           KC_Y,    KC_U,    KC_I,    KC_O,     KC_P,
       KC_A,    KC_S,       KC_D,    KC_F,    KC_G,           KC_H,    KC_J,    KC_K,    KC_L,     KC_SCLN,
@@ -94,7 +77,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
       /*,      */ CK_UP,   MU_TOG,  _______, _______,        _______, _______, KC_P0,   KC_PDOT,
       /*,      */ CK_DOWN, MU_MOD,  _______, _______,        _______, _______, _______, _______),
 };
-const bool defaultlayers[] = {
+
+const bool defaultlayers[7] = {
   [_xQ] = true,
   [_xC] = true,
   [_xD] = true,
@@ -104,93 +88,6 @@ const bool defaultlayers[] = {
   [_xF] = false,
 };
 const size_t defaultlayers_n = sizeof(defaultlayers) / sizeof(defaultlayers[0]);
-
-// New keycode KC_LAYO rotates between available default layers (for e.g.,
-// selecting a base layout). Shift+KC_LAYO makes the current one persistent.
-bool process_record_layout(uint16_t keycode, keyrecord_t *record) {
-  uint32_t default_layer;
-  uint8_t i;
-  #if defined(AUDIO_ENABLE)
-  float saved_song[][2] = SONG(COIN_SOUND);
-  #endif
-
-  if (keycode != KC_LAYO || !record->event.pressed) {
-    return true;
-  }
-
-  if (get_mods() & (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))) { // shift pressed
-    // save default layer. whatever the current default layer is, store that
-    eeconfig_update_default_layer(default_layer_state);
-    #if defined(AUDIO_ENABLE)
-        PLAY_SONG(saved_song);
-    #endif
-  } else {
-    // rotate default layer.
-    // find the current default layer
-    default_layer = biton32(default_layer_state);
-    // find next valid default layer
-    for (i = 1; i < defaultlayers_n; i++) {
-      if (defaultlayers[(default_layer + i) % defaultlayers_n]) {
-        break;
-      }
-    }
-    if (i == defaultlayers_n) {
-      // we fell out of the loop without finding another default layer to switch
-      // to.
-      return false;
-    }
-    default_layer = (default_layer + i) % defaultlayers_n;
-    default_layer_set(1U<<default_layer);
-    led_set(host_keyboard_leds());
-    #if defined(AUDIO_ENABLE) && defined(DEFAULT_LAYER_SONGS)
-      PLAY_SONG(default_layer_songs[default_layer]);
-    #endif
-  }
-  return false;
-}
-
-// This is a hack to place <question mark> on <shift-comma> and <exclamation
-// mark> on <shift-period>, when using an operating system configured for a
-// US/qwerty layout.
-// cdeq = "comma dot exclamation question"
-bool comm_shifted = false;
-bool ques_shifted = false;
-bool process_record_cdeq(uint16_t keycode, keyrecord_t *record) {
-  uint8_t shifted;
-  uint16_t s_keycode;
-  bool *k_shifted;
-
-  switch (keycode) {
-  case KC_COMM:
-    s_keycode = KC_SLSH;
-    k_shifted = &comm_shifted;
-    break;
-  case KC_DOT:
-    s_keycode = KC_1;
-    k_shifted = &ques_shifted;
-    break;
-  default:
-    return true;
-  }
-
-  shifted = get_mods() & (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT));
-
-  // Keydown. If shift is currently pressed, register its alternate keycode.
-  if (record->event.pressed && shifted) {
-    *k_shifted = true;
-    register_code(s_keycode);
-    return false;
-    // Keyup. If shift was pressed back when the key was pressed, unregister
-    // its alternate keycode.
-  } else if (!(record->event.pressed) && *k_shifted) {
-    *k_shifted = false;
-    unregister_code(s_keycode);
-    return false;
-    // Otherwise, behave as normal.
-  } else {
-    return true;
-  }
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
   return \
@@ -218,26 +115,36 @@ void led_set_user(uint8_t usb_leds) {
   // usb_led      [     |     |     |kana |cmps |scrl |caps | num ]
   // PORTB:       [  NC |  10 |   9 |   8 |  14 |  16 |  15 |rxled]
   // PORTC:       [  NC |   5 |     |     |     |     |     |     ]
-  // PORTD:       [   6 |  NC |txled|   4 | tx* | rx* | grn | p29 ]
+  // PORTD:       [   6 |  NC |txled| grn+| tx* | rx* | sda+| scl ]
   // PORTE:       [     |   7 |     |     |     |     |     |     ]
   // PORTF:       [  a0 |  a1 | red | blu |     |     |  NC |  NC ]
   //
-  // PD0 is connected to the pairing switch and p29 on the wireless module.
+  // * PD3 and PD2 are transmit and receive for USART1 which is how the pro
+  //   micro communicates with the wireless module.
+  // + I moved the green LED from PD1 to PD4; see rules.mk.
+  // PD0 is connected to the pairing button and p29 on the wireless module.
   // PF0,PF1,PB7,PC7,PD6 are not broken out by the pro micro board. I don't understand why.
   // PB1-PB6,PD4,PD5,PD6,PF6,PF7 are not connected to the Mitosis receiver
   // board. Each may be connected to an LED by way of a resistor (4.7k to
   // match the others) for a total of 14 additional indicators.
 
-  uint32_t portf_bits = \
+  uint8_t portf_bits = \
     ((layer_state|default_layer_state)&0b01100000)>>1 | \
     ((layer_state|default_layer_state)&0b00010000)<<1 | \
     ((layer_state|default_layer_state)&0b01000000)>>2;
-  uint32_t portd_bits = \
-    (usb_leds&0b1)<<5 | \
-    ((layer_state|default_layer_state)&0b1000)>>2;
   // negated because for ports 0=LED on.
   setbits(PORTF, ~portf_bits, 0b00110000);
+#ifdef MITOSIS_DATAGROK_I2CHACK
+  uint8_t portd_bits = \
+    (usb_leds&0b1)<<5 | \
+    ((layer_state|default_layer_state)&0b1000)<<1;
+  setbits(PORTD, ~portd_bits, 0b00110000);
+#else
+  uint8_t portd_bits = \
+    (usb_leds&0b1)<<5 | \
+    ((layer_state|default_layer_state)&0b1000)>>2;
   setbits(PORTD, ~portd_bits, 0b00100010);
+#endif
 }
 
 // vim: set sw=2 et:
