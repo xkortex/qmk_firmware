@@ -12,3 +12,6 @@ BLUETOOTH_ENABLE = no        # Enable Bluetooth with the Adafruit EZ-Key HID
 RGBLIGHT_ENABLE = no         # Enable WS2812 RGB underlight.
 API_SYSEX_ENABLE = no
 
+ifndef QUANTUM_DIR
+	include ../../../../Makefile
+endif

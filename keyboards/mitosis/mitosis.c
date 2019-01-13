@@ -1,15 +1,28 @@
 #include "mitosis.h"
-#include "config.h"
 
 void uart_init(void) {
 	SERIAL_UART_INIT();
 }
 
 void led_init(void) {
-	DDRD  |= (1<<1); // Pin to green, set as output
-	PORTD |= (1<<1); // Turn it off
-	DDRF  |= (1<<4) | (1<<5); // Pins to red and blue, set as output
-	PORTF |= (1<<4) | (1<<5); // Turn them off
+  // LEDs are:
+  //
+  // PB0 (Pro micro RX LED)
+  // PD5 (Pro micro TX LED)
+  // PF5 (Mitosis RGB LED Red component)
+  // PD1 (Mitosis RGB LED Green component)
+  // PF4 (Mitosis RGB LED Blue component)
+  DDRB  |= (1<<0);
+  PORTB |= (1<<0);
+#ifdef MITOSIS_DATAGROK_I2CHACK
+  DDRD  |= (1<<4) | (1<<5); // Pin to green, set as output
+  PORTD |= (1<<4) | (1<<5); // Turn it off
+#else
+  DDRD  |= (1<<1) | (1<<5); // Pin to green, set as output
+  PORTD |= (1<<1) | (1<<5); // Turn it off
+#endif
+  DDRF  |= (1<<4) | (1<<5); // Pins to red and blue, set as output
+  PORTF |= (1<<4) | (1<<5); // Turn them off
 }
 
 void matrix_init_kb(void) {
