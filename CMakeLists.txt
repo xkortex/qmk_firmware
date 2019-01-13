@@ -2245,3 +2245,14 @@ add_executable(qmk_firmware_all
         tmk_core/protocol/xt.h
         tmk_core/protocol/xt_interrupt.c
         tmk_core/ring_buffer.h)
+
+
+
+#message("Project ROOT ${CMAKE_CURRENT_SOURCE_DIR}")
+
+add_subdirectory(keyboards)
+add_subdirectory(keyboards/mitosis)
+
+add_executable(mitosis_datagrok.out
+        keyboards/mitosis/mitosis.c
+        )
