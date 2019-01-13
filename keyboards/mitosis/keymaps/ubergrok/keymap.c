@@ -2,6 +2,12 @@
 #include "feature_cdeq.h"
 #include "feature_layout_rotate.h"
 
+// clion spoofing
+//#include "stdint.h"
+//#include "../../config.h"
+//#include "keymap.h"
+#include "mitosis.h"
+
 #ifdef AUDIO_ENABLE
 #include "audio.h"
 #ifdef DEFAULT_LAYER_SONGS
