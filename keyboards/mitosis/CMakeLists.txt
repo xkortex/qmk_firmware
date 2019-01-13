@@ -6,6 +6,8 @@ message("Current Binary Dir        ${CMAKE_CURRENT_BINARY_DIR}")
 
 set(__AVR__ AVR CACHE STRING "AVR value") # Configurable by user
 set(ARCH AVR8 CACHE STRING "target architecture")
+set(MCU atmega32u4)
+set(BOOTLOADER caterina)
 configure_file(keymaps/ubergrok/auto_config.h.in keymaps/ubergrok/auto_config.h)
 
 find_library(qmk_LUFA qmk_LUFA lib/lufa)

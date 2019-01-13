@@ -1,4 +1,5 @@
 #include "mitosis.h"
+#include "config.h"
 
 void uart_init(void) {
 	SERIAL_UART_INIT();

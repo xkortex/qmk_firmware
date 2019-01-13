@@ -2249,6 +2249,11 @@ add_executable(qmk_firmware_all
 
 
 #message("Project ROOT ${CMAKE_CURRENT_SOURCE_DIR}")
+include_directories(/usr/lib/avr
+        /usr/lib/avr/include
+        )
+
+FIND_LIBRARY(avr_LIBRARIES avr /usr/lib/avr)
 
 add_subdirectory(keyboards)
 add_subdirectory(keyboards/mitosis)

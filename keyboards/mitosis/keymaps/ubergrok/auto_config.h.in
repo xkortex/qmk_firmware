@@ -1,2 +1,4 @@
 #cmakedefine __AVR__ @__AVR__@
 #cmakedefine ARCH @ARCH@
+#cmakedefine MCU @MCU@
+#cmakedefine BOOTLOADER @BOOTLOADER@

@@ -1,4 +1,7 @@
 #include QMK_KEYBOARD_H
+#include "stdint.h"
+#include "../../config.h"
+#include "mitosis.h"
 
 #ifdef AUDIO_ENABLE
 #include "audio.h"
