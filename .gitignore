@@ -21,7 +21,6 @@ build/
 .vagrant/
 quantum/version.h
 .idea/
-CMakeLists.txt
 cmake-build-debug
 doxygen/
 .DS_STORE
