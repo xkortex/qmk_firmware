@@ -25,4 +25,8 @@ add_executable(mitosis_ubergrok.out
         mitosis.h
         keymaps/ubergrok/config.h
         keymaps/ubergrok/keymap.c
+        keymaps/ubergrok/feature_layout_rotate.c
+        keymaps/ubergrok/feature_layout_rotate.h
+        keymaps/ubergrok/feature_cdeq.c
+        keymaps/ubergrok/feature_cdeq.h
         )

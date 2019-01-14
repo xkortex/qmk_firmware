@@ -1,5 +1,7 @@
 #include QMK_KEYBOARD_H
 #include "keymap.h"
+#include "stdint.h"
+#include "action_util.h"
 #ifdef AUDIO_ENABLE
 #include "audio.h"
 #ifdef DEFAULT_LAYER_SONGS

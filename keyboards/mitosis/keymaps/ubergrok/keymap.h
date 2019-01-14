@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include QMK_KEYBOARD_H
 
 enum mitosis_layers
@@ -8,7 +9,8 @@ enum mitosis_layers
     _xW, // workman
     _xS, // symbols - red
     _xN, // numbers - blue
-    _xF  // functions - purple
+    _xF, // functions - purple
+    _2Q  // qwerty2, electric boogaloo. allows hotkeys on native layout.
   };
 
 enum mitosis_keycodes
@@ -16,5 +18,6 @@ enum mitosis_keycodes
     KC_LAYO = SAFE_RANGE
   };
 
-const bool defaultlayers[7];
+#define NUM_LAYERS 8
+const bool defaultlayers[NUM_LAYERS];
 const size_t defaultlayers_n;
