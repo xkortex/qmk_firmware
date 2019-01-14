@@ -3,10 +3,8 @@
 
 enum mitosis_layers
   {
-    _xQ, // qwerty
-    _xC, // colemak
     _xD, // dvorak
-    _xW, // workman
+    _xQ, // qwerty
     _xS, // symbols - red
     _xN, // numbers - blue
     _xF, // functions - purple
@@ -18,6 +16,6 @@ enum mitosis_keycodes
     KC_LAYO = SAFE_RANGE
   };
 
-#define NUM_LAYERS 8
+#define NUM_LAYERS 6
 const bool defaultlayers[NUM_LAYERS];
 const size_t defaultlayers_n;
