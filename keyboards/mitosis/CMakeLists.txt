@@ -10,13 +10,13 @@ set(MCU atmega32u4)
 set(BOOTLOADER caterina)
 configure_file(keymaps/ubergrok/auto_config.h.in keymaps/ubergrok/auto_config.h)
 
-find_library(qmk_LUFA qmk_LUFA lib/lufa)
 include_directories(
         ${CMAKE_CURRENT_BINARY_DIR}
         ${CMAKE_CURRENT_BINARY_DIR}/keymaps/ubergrok/
         )
 
 add_definitions(-DARCH=AVR8)
+
 
 add_executable(mitosis_ubergrok.out
         config.h
@@ -29,4 +29,8 @@ add_executable(mitosis_ubergrok.out
         keymaps/ubergrok/feature_layout_rotate.h
         keymaps/ubergrok/feature_cdeq.c
         keymaps/ubergrok/feature_cdeq.h
+        ${qmk_firmware_SOURCE_DIR}/quantum/config_common.h
         )
+
+target_include_directories(mitosis_ubergrok.out PUBLIC ${qmk_firmware_SOURCE_DIR}/quantum)
+message(STATUS ${qmk_firmware_SOURCE_DIR})

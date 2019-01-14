@@ -15,4 +15,7 @@ add_subdirectory(lufa/LUFA)
 add_library(qmk_lufa
         lufa/LUFA/Version.h
         )
+
+set_target_properties(qmk_lufa PROPERTIES LINKER_LANGUAGE C)
+
 #target_link_libraries(LyrebirdFirmware ${avr_LIBRARIES})
