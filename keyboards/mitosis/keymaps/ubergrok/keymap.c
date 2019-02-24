@@ -7,6 +7,7 @@
 //#include "../../config.h"
 //#include "keymap.h"
 #include "mitosis.h"
+#include "aux.h"
 
 #ifdef AUDIO_ENABLE
 #include "audio.h"
@@ -51,8 +52,8 @@ const uint16_t PROGMEM keymaps[NUM_LAYERS][MATRIX_ROWS][MATRIX_COLS] = {
     KC_QUOT, KC_COMM,    KC_DOT,  KC_P,    KC_Y,           KC_F,    KC_G,    KC_C,    KC_R,     KC_L,
     KC_A,    KC_O,       KC_E,    KC_U,    KC_I,           KC_D,    KC_H,    KC_T,    KC_N,     KC_S,
     KC_SCLN, KC_Q,       KC_J,    KC_K,    KC_X,           KC_B,    KC_M,    KC_W,    KC_V,     KC_Z,
-    /*,   */ KC_LGUI,    KC_LALT, MO(_xS), KC_BSPC,        KC_RSPC, MO(_xN), KC_RCTL, KC_RGUI,
-    /*,   */ KC_HENK,    LQ_LCTL, MO(_xN), KC_SPC,         SHIFTAB, MO(_xS), KC_RALT, KC_MHEN),
+    /*,   */ KC_LGUI,    KC_LSHIFT, MO(_xS), KC_BSPC,        KC_RSPC, MO(_xN), KC_RSHIFT, KC_LAYO,
+    /*,   */ KC_HENK,    LQ_LCTL, MO(_xN), KC_SPC,         SHIFTAB, MO(_xS), KC_RCTL, KC_MHEN),
 
   [_xQ] = LAYOUT(
     KC_Q,    KC_W,       KC_E,    KC_R,    KC_T,           KC_Y,    KC_U,    KC_I,    KC_O,     KC_P,
@@ -60,20 +61,23 @@ const uint16_t PROGMEM keymaps[NUM_LAYERS][MATRIX_ROWS][MATRIX_COLS] = {
     KC_Z,    KC_X,       KC_C,    KC_V,    KC_B,           KC_N,    KC_M,    KC_COMM, KC_DOT,   KC_QUOT,
     /*,   */ _______,    _______, _______, _______,        _______, _______, _______, _______,
     /*,   */ _______,    _______, _______, _______,        _______, _______, _______, _______),
+
       /* RED */
   [_xS] = LAYOUT(
     KC_ESC,  KC_END ,    KC_UP,   KC_HOME, KC_PGUP,        KC_PLUS, KC_CIRC, KC_AMPR, KC_PERC,  KC_BSPC,
     _______, KC_LEFT,    KC_DOWN, KC_RGHT, KC_PGDN,        KC_PIPE, KC_AT,   KC_DLR,  KC_HASH,  KC_ENT,
     KC_BSLS, KC_LABK,    KC_LCBR, KC_LPRN, KC_LBRC,        KC_RBRC, KC_RPRN, KC_RCBR, KC_RABK,  KC_SLSH,
     /*,      */ _______, _______, _______, KC_DEL,         _______, _______, _______, _______,
-    /*,      */ _______, LQ_LCTL, TT(_xF), _______,        _______, TT(_xF), _______, _______),
+    /*,      */ _______, LQ_LCTL, _______, _______,        _______, TT(_xF), _______, _______),
+
       /* BLUE */
   [_xN] = LAYOUT(
     KC_ESC,  KC_F7,      KC_F8,   KC_F9,   KC_F10,         KC_PPLS, KC_7,    KC_8,    KC_9,     KC_KP_DOT,
     KC_SLCK, KC_F4,      KC_F5,   KC_F6,   KC_F11,         KC_NLCK, KC_4,    KC_5,    KC_6,     KC_PENT,
     KC_PAUS, KC_F1,      KC_F2,   KC_F3,   KC_F12,         KC_PAST, KC_1,    KC_2,    KC_3,     KC_PSLS,
-    /*,      */ _______, _______, TT(_xF), _______,        _______, TT(_xF), KC_0,    KC_DOT,
+    /*,      */ _______, _______, _______, _______,        _______, TT(_xF), KC_0,    KC_DOT,
     /*,      */ _______, LQ_LCTL, _______, _______,        _______, _______, _______, _______),
+
       /* Purple */
   [_xF] = LAYOUT(
     RESET,   KC_INS,     KC_PGUP, DEBUG,   KC_VOLU,        KC_PPLS, KC_P7,   KC_P8,   KC_P9,    KC_PMNS,
@@ -81,6 +85,7 @@ const uint16_t PROGMEM keymaps[NUM_LAYERS][MATRIX_ROWS][MATRIX_COLS] = {
     KC_LAYO, KC_MPRV,    KC_MPLY, KC_MNXT, KC_MUTE,        KC_PAST, KC_P1,   KC_P2,   KC_P3,    KC_PSLS,
     /*,      */ _______, _______, _______, _______,        _______, _______, KC_P0,   KC_PDOT,
     /*,      */ _______, LQ_LCTL, _______, _______,        _______, _______, _______, _______),
+
       /* Over-qwerty for hotkeys */
   [_2Q] = LAYOUT(
     KC_Q,    KC_W,       KC_E,    KC_R,    KC_T,           KC_Y,    KC_U,    KC_I,    KC_O,     KC_P,
@@ -107,7 +112,10 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 }
 
 // Set the bits of A selected by MASK to the corresponding bits of B
-#define setbits(A, B, MASK) A = (A & (B | ~MASK)) | (B & MASK)
+#define setbits(A, B, MASK) A = ((A) & ((B) | ~(MASK))) | ((B) & (MASK))
+#define RED_BIT 0b00100000
+#define BLU_BIT 0b00010000
+#define GRN_BIT 0b00110000
 
 void led_set_user(uint8_t usb_leds) {
   // A simple (but technically inaccurate) model of the momentary layer state:
@@ -139,21 +147,59 @@ void led_set_user(uint8_t usb_leds) {
   // board. Each may be connected to an LED by way of a resistor (4.7k to
   // match the others) for a total of 14 additional indicators.
 
-  uint8_t portf_bits = \
-    ((layer_state|default_layer_state)&0b01100000)>>1 | \
-    ((layer_state|default_layer_state)&0b00010000)<<1 | \
-    ((layer_state|default_layer_state)&0b01000000)>>2;
+//  uint8_t adj_layer = layer_state + 2;
+  layer_print(layer_state);
+//  uprint("ledset %d ", layer_state);
+  uint8_t portd_bits = 0;
+  uint8_t portf_bits = 0;
+  /*
+  portf_bits = \
+    ((adj_layer|default_layer_state)&0b01100000)>>1 | \
+    ((adj_layer|default_layer_state)&0b00010000)<<1 | \
+    ((adj_layer|default_layer_state)&0b01000000)>>2;
+    */
+  uint8_t layer_mask = layer_state & 1;
+  if (layer_mask) {
+    portf_bits |= RED_BIT;
+  } else {
+    portf_bits |= BLU_BIT;
+  }
+  /*
+  switch (layer_state) {
+    case 1:
+      portf_bits |= RED_BIT;
+//      break;
+    case _xS:
+      portf_bits |= RED_BIT;
+      break;
+    case _xN:
+      portf_bits |= RED_BIT;
+      break;
+    default:
+//      portf_bits |= RED_BIT;
+//      portf_bits |= BLU_BIT;
+
+      break;
+  }
+   */
+
   // negated because for ports 0=LED on.
   setbits(PORTF, ~portf_bits, 0b00110000);
+//  PORTF &= ~(1<<5);
+//  PORTF &= ~(1<<4);
+//  PORTD &= ~(1<<1);
 #ifdef MITOSIS_DATAGROK_I2CHACK
-  uint8_t portd_bits = \
+  portd_bits = \
     (usb_leds&0b1)<<5 | \
-    ((layer_state|default_layer_state)&0b1000)<<1;
+    ((adj_layer|default_layer_state)&0b1000)<<1;
   setbits(PORTD, ~portd_bits, 0b00110000);
 #else
-  uint8_t portd_bits = \
-    (usb_leds&0b1)<<5 | \
-    ((layer_state|default_layer_state)&0b1000)>>2;
+  portd_bits = 0;//0b00100010;
+  /*
+  portd_bits =
+    (usb_leds&0b1)<<5 |
+    ((adj_layer|default_layer_state)&0b1000)>>2;
+    */
   setbits(PORTD, ~portd_bits, 0b00100010);
 #endif
 }

@@ -13,6 +13,7 @@
     - "Purple" (both Red and Blue): Functions layer
     
   This tri-state layer mechanism is a bit similar to Planck and Preonic's "Raise," "Lower," and "Adjust."
+  This tri-state layer mechanism is a bit similar to Planck and Preonic's "Raise," "Lower," and "Adjust."
 
 - The base layer is QWERTY.
   [Colemak][], [Dvorak][], and [Workman][] may be toggled using `Red`+`Blue`+`Z`.

@@ -2,6 +2,7 @@
 #include "keymap.h"
 #include "stdint.h"
 #include "action_util.h"
+#include <print.h>
 #ifdef AUDIO_ENABLE
 #include "audio.h"
 #ifdef DEFAULT_LAYER_SONGS
@@ -25,12 +26,14 @@ bool process_record_layout(uint16_t keycode, keyrecord_t *record) {
   if (get_mods() & (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))) { // shift pressed
     // save default layer. whatever the current default layer is, store that
     eeconfig_update_default_layer(default_layer_state);
+    print("save\n");
     #if defined(AUDIO_ENABLE)
         PLAY_SONG(saved_song);
     #endif
   } else {
     // rotate default layer.
     // find the current default layer
+    print("rot\n");
     default_layer = biton32(default_layer_state);
     // find next valid default layer
     for (i = 1; i < defaultlayers_n; i++) {
