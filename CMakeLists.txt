@@ -3,6 +3,11 @@ project(qmk_firmware)
 
 set(CMAKE_CXX_STANDARD 11)
 
+include_directories(keyboards/mitosis)
+#include_directories(keyboards/mitosis/keymaps/datagrok)
+include_directories(keyboards/mitosis/keymaps/mjt)
+include_directories(keyboards/mitosis/keymaps/ubergrok)
+
 include_directories(drivers/arm)
 include_directories(drivers/avr)
 include_directories(drivers/boards/GENERIC_STM32_F303XC)
@@ -13,10 +18,6 @@ include_directories(drivers/qwiic)
 include_directories(drivers/qwiic/util)
 include_directories(drivers/ugfx/gdisp/is31fl3731c)
 include_directories(drivers/ugfx/gdisp/st7565)
-include_directories(keyboards/mitosis)
-include_directories(keyboards/mitosis/keymaps/datagrok)
-include_directories(keyboards/mitosis/keymaps/mjt)
-include_directories(keyboards/mitosis/keymaps/ubergrok)
 include_directories(layouts/community/60_ansi/talljoe-ansi)
 include_directories(layouts/community/60_ansi_split_bs_rshift/talljoe)
 include_directories(layouts/community/60_hhkb/talljoe-hhkb)
@@ -2258,6 +2259,7 @@ FIND_LIBRARY(avr_LIBRARIES avr /usr/lib/avr)
 add_subdirectory(keyboards)
 add_subdirectory(keyboards/mitosis)
 
-add_executable(mitosis_datagrok.out
-        keyboards/mitosis/mitosis.c
-        )
+# datagrok keyboard
+#add_executable(mitosis_datagrok.out
+#        keyboards/mitosis/mitosis.c
+#        )

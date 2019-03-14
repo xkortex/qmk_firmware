@@ -22,7 +22,6 @@ bool process_record_layout(uint16_t keycode, keyrecord_t *record) {
   if (keycode != KC_LAYO || !record->event.pressed) {
     return true;
   }
-
   if (get_mods() & (MOD_BIT(KC_LSHIFT)|MOD_BIT(KC_RSHIFT))) { // shift pressed
     // save default layer. whatever the current default layer is, store that
     eeconfig_update_default_layer(default_layer_state);
